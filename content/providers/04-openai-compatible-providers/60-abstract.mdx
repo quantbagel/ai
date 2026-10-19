@@ -1,0 +1,108 @@
+---
+title: Abstract
+description: Use the Abstract Responses API with the AI SDK.
+---
+
+# Abstract Provider
+
+[Abstract](https://abstract.inc) serves open-weight language models through an
+OpenAI Responses-compatible API. You can use it with the AI SDK through the
+[Open Responses provider](/providers/ai-sdk-providers/open-responses).
+
+## Setup
+
+Install the Open Responses provider:
+
+<InstallPackages packages="@ai-sdk/open-responses" />
+
+Create an API key with the `abstract login` command or on the
+[Abstract Platform](https://platform.abstract.inc/keys), and set it as a
+server-side environment variable:
+
+```bash
+export ABSTRACT_API_KEY=your-api-key
+```
+
+## Provider Instance
+
+Create an Abstract provider instance with `createOpenResponses`:
+
+```ts
+import { createOpenResponses } from '@ai-sdk/open-responses';
+
+const abstract = createOpenResponses({
+  name: 'abstract',
+  url: 'https://api.abstract.inc/v1/responses',
+  apiKey: process.env.ABSTRACT_API_KEY,
+});
+```
+
+The `apiKey` setting sends the key as a Bearer token in the `Authorization`
+header.
+
+## Language Models
+
+Create a language model by passing an Abstract model ID to the provider
+instance:
+
+```ts
+const model = abstract('glm-5.3:superfast');
+```
+
+### Generate Text
+
+```ts
+import { createOpenResponses } from '@ai-sdk/open-responses';
+import { generateText } from 'ai';
+
+const abstract = createOpenResponses({
+  name: 'abstract',
+  url: 'https://api.abstract.inc/v1/responses',
+  apiKey: process.env.ABSTRACT_API_KEY,
+});
+
+const { text } = await generateText({
+  model: abstract('deepseek-v4-flash:superfast'),
+  prompt: 'What is the capital of France?',
+});
+
+console.log(text);
+```
+
+### Stream Text
+
+```ts
+import { createOpenResponses } from '@ai-sdk/open-responses';
+import { streamText } from 'ai';
+
+const abstract = createOpenResponses({
+  name: 'abstract',
+  url: 'https://api.abstract.inc/v1/responses',
+  apiKey: process.env.ABSTRACT_API_KEY,
+});
+
+const result = streamText({
+  model: abstract('glm-5.3:superfast'),
+  prompt: 'Count from 1 to 5, separated by spaces.',
+});
+
+for await (const textPart of result.textStream) {
+  process.stdout.write(textPart);
+}
+```
+
+## Supported Models and Capabilities
+
+| Model ID                      | Input | Tool Calling | Max Output Tokens |
+| ----------------------------- | ----- | ------------ | ----------------- |
+| `glm-5.3:superfast`           | Text  | Yes          | 65,536            |
+| `deepseek-v4-flash:superfast` | Text  | Yes          | 65,536            |
+| `kimi-k3:superfast`           | Text  | Yes          | 65,536            |
+
+See [Abstract pricing](https://abstract.inc/pricing) for current prices.
+
+## Resources
+
+- [Abstract Responses API documentation](https://abstract.inc/docs/llm/responses)
+- [Abstract documentation](https://abstract.inc/docs)
+- [AI SDK Open Responses provider](/providers/ai-sdk-providers/open-responses)
